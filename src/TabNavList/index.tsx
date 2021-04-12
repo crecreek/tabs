@@ -428,7 +428,7 @@ function TabNavList(props: TabNavListProps, ref: React.Ref<HTMLDivElement>) {
 
   const toFirst: boolean = tabPositionTopOrBottom ? !pingLeft : !pingTop
   const toLast: boolean = tabPositionTopOrBottom ? !pingRight : !pingBottom
-  const canScroll:boolean = wrapperScrollWidth >= wrapperWidth
+  const canScroll: boolean = wrapperScrollWidth >= wrapperWidth
 
   return (
     <div
