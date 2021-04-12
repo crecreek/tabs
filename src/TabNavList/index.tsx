@@ -35,6 +35,8 @@ export interface TabNavListProps {
   animated?: AnimatedConfig;
   extra?: TabBarExtraContent;
   editable?: EditableConfig;
+  toFirstIcon?: React.ReactNode;
+  toLastIcon?: React.ReactNode;
   moreIcon?: React.ReactNode;
   moreTransitionName?: string;
   mobile: boolean;
@@ -89,6 +91,8 @@ function TabNavList(props: TabNavListProps, ref: React.Ref<HTMLDivElement>) {
     children,
     onTabClick,
     onTabScroll,
+    toLastIcon,
+    toFirstIcon,
   } = props;
   const tabsWrapperRef = useRef<HTMLDivElement>();
   const tabListRef = useRef<HTMLDivElement>();
@@ -374,7 +378,7 @@ function TabNavList(props: TabNavListProps, ref: React.Ref<HTMLDivElement>) {
         } else {
           newInkStyle.left = activeTabOffset.left;
         }
-
+        newInkStyle['--width'] = `${activeTabOffset.width}px`
         newInkStyle.width = activeTabOffset.width;
       } else {
         newInkStyle.top = activeTabOffset.top;
@@ -407,6 +411,7 @@ function TabNavList(props: TabNavListProps, ref: React.Ref<HTMLDivElement>) {
   let pingRight: boolean;
   let pingTop: boolean;
   let pingBottom: boolean;
+  
 
   if (tabPositionTopOrBottom) {
     if (rtl) {
@@ -421,6 +426,10 @@ function TabNavList(props: TabNavListProps, ref: React.Ref<HTMLDivElement>) {
     pingBottom = -transformTop + wrapperHeight < wrapperScrollHeight;
   }
 
+  const toFirst: boolean = tabPositionTopOrBottom ? !pingLeft : !pingTop
+  const toLast: boolean = tabPositionTopOrBottom ? !pingRight : !pingBottom
+  const canScroll:boolean = wrapperScrollWidth >= wrapperWidth
+
   return (
     <div
       ref={ref}
@@ -433,7 +442,9 @@ function TabNavList(props: TabNavListProps, ref: React.Ref<HTMLDivElement>) {
       }}
     >
       <ExtraContent position="left" extra={extra} prefixCls={prefixCls} />
-
+      {
+        canScroll && <span className={classNames({[`${wrapPrefix}-toFirst`]: toFirst})} onClick={() => scrollToTab(tabNodes[0].key as string)}>{toFirstIcon}</span>
+      }
       <ResizeObserver onResize={onListHolderResize}>
         <div
           className={classNames(wrapPrefix, {
@@ -472,7 +483,9 @@ function TabNavList(props: TabNavListProps, ref: React.Ref<HTMLDivElement>) {
           </ResizeObserver>
         </div>
       </ResizeObserver>
-
+      {
+        canScroll && <span className={classNames({[`${wrapPrefix}-toLast`]: toLast})} onClick={() => scrollToTab(tabNodes[tabNodes.length - 1].key as string)}>{toLastIcon}</span>
+      }
       <OperationNode
         {...props}
         ref={operationsRef}
